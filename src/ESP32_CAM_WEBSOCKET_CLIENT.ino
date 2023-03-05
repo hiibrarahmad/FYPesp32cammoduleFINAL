@@ -1,7 +1,8 @@
 #include "esp_camera.h"
 #include <WiFi.h>
 #include <ArduinoWebsockets.h>
-//
+#include <ezButton.h>
+
 // WARNING!!! Make sure that you have either selected ESP32 Wrover Module,
 //            or another board which has PSRAM enabled
 //
@@ -14,6 +15,7 @@
 #define CAMERA_MODEL_AI_THINKER
 
 #include "camera_pins.h"
+ezButton button(16);
 
 const char* ssid = "ibrar";
 const char* password = "ibrarahmad";
@@ -26,6 +28,7 @@ WebsocketsClient client;
 
 void setup() {
   Serial.begin(115200);
+  button.setDebounceTime(50); // set debounce time to 50 milliseconds
   Serial.setDebugOutput(true);
   Serial.println();
 
@@ -53,7 +56,7 @@ void setup() {
   //init with high specs to pre-allocate larger buffers
   if(psramFound()){
     config.frame_size = FRAMESIZE_QVGA; // 320x240
-    config.jpeg_quality = 10;
+    config.jpeg_quality = 63;
     config.fb_count = 2;
   } else {
     config.frame_size = FRAMESIZE_SVGA;
@@ -92,6 +95,18 @@ void setup() {
 }
 
 void loop() {
+
+  button.loop(); // MUST call the loop() function first
+
+  if(button.isPressed())
+    Serial.println("The button is pressed");
+
+  if(button.isReleased())
+    Serial.println("The button is released");
+
+
+
+    
   camera_fb_t *fb = NULL;
   esp_err_t res = ESP_OK;
   fb = esp_camera_fb_get();
