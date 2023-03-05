@@ -123,5 +123,9 @@ void loop() {
   }
 
   client.sendBinary((const char*) fb->buf, fb->len);
+
+
+
+  
   esp_camera_fb_return(fb);
 }
